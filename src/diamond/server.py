@@ -18,7 +18,7 @@ sys.path.append(
         os.path.join(
             os.path.dirname(__file__), "../")))
 
-from diamond.api_server import app as api_server_app
+from diamond.api_server import DiamondAPI
 
 from diamond.utils.classes import initialize_collector
 from diamond.utils.classes import load_collectors
@@ -62,10 +62,14 @@ class Server(object):
             setproctitle(oldproctitle)
         self.metric_queue = self.manager.Queue()
 
+        self.collector_enable_queue = self.manager.Queue()
+        self.collector_disable_queue = self.manager.Queue()
         api_process = multiprocessing.Process(
             name = 'Diamond API Server',
-            target = api_server_app.run,
-            args = (),
+            target = DiamondAPI,
+            args = (self.configfile,
+                    self.collector_enable_queue,
+                    self.collector_disable_queue),
         )
         api_process.daemon = True
         api_process.start()
