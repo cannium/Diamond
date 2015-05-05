@@ -9,7 +9,7 @@ class DiamondAPI(object):
         self.config = load_config(self.config_file)
         self.enable_queue = enable_queue
         self.disable_queue = disable_queue
-        app.run()
+        app.run(debug=True) # for develop
 
     @app.route('/', methods=['GET'])
     def hello_world(self):
