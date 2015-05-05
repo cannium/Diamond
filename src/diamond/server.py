@@ -208,7 +208,7 @@ class Server(object):
                         target=collector_process,
                         args=(collector, self.metric_queue, self.log)
                         )
-                    process.daemon = True
+                    process.daemon = False
                     process.start()
 
                 ##############################################################
