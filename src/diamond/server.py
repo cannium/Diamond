@@ -18,6 +18,8 @@ sys.path.append(
         os.path.join(
             os.path.dirname(__file__), "../")))
 
+from diamond.api_server import app as api_server_app
+
 from diamond.utils.classes import initialize_collector
 from diamond.utils.classes import load_collectors
 from diamond.utils.classes import load_dynamic_class
@@ -59,6 +61,14 @@ class Server(object):
         if setproctitle:
             setproctitle(oldproctitle)
         self.metric_queue = self.manager.Queue()
+
+        api_process = multiprocessing.Process(
+            name = 'Diamond API Server',
+            target = api_server_app.run,
+            args = (),
+        )
+        api_process.daemon = True
+        api_process.start()
 
     def run(self):
         """
@@ -140,6 +150,7 @@ class Server(object):
                 # Collectors
                 ##############################################################
 
+                # collectors that should be running
                 running_collectors = []
                 for collector, config in self.config['collectors'].iteritems():
                     if config.get('enabled', False) is not True:
