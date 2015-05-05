@@ -18,7 +18,7 @@ sys.path.append(
         os.path.join(
             os.path.dirname(__file__), "../")))
 
-from diamond.api_server import DiamondAPI
+from diamond.api_server import start as start_api_server
 
 from diamond.utils.classes import initialize_collector
 from diamond.utils.classes import load_collectors
@@ -66,7 +66,7 @@ class Server(object):
         self.collector_disable_queue = self.manager.Queue()
         api_process = multiprocessing.Process(
             name = 'Diamond API Server',
-            target = DiamondAPI,
+            target = start_api_server,
             args = (self.configfile,
                     self.collector_enable_queue,
                     self.collector_disable_queue),
