@@ -8,7 +8,7 @@ from os.path import isdir, join
 from diamond.utils.config import load_config
 from flask import Flask, jsonify
 
-log = logging.getLogger('API server')
+log = logging.getLogger('diamond')
 
 app = Flask('Diamond API Server')
 
@@ -49,12 +49,15 @@ def start(config_file_path, collector_enable_queue, collector_disable_queue):
                     collector_path)
     for file in collector_module_files:
         with open(file, 'r') as f:
-            for p in ast.parse(f.read()):
+            for p in ast.parse(f.read()).body:
                 # check if is a class definition and is a subclass
                 # of Collector
-                if isinstance(p, ast.ClassDef) and \
-                        p.bases[0].attr == 'Collector':
-                    all_collectors.append(p.name)
+                try:
+                    if isinstance(p, ast.ClassDef) and \
+                            p.bases[0].attr == 'Collector':
+                        all_collectors.append(p.name)
+                except AttributeError as e:
+                    log.debug('In file %s: %s' % (file, e))
 
     app.run(debug=True)
 
