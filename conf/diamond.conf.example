@@ -32,6 +32,15 @@ handlers_config_path = /etc/diamond/handlers/
 # Directory to load handler modules from
 handlers_path = /usr/share/diamond/handlers/
 
+# API server bind address
+api_server_address = 0.0.0.0
+
+# API server bind port
+api_server_port = 5000
+
+# API server debug
+api_server_debug = False
+
 ################################################################################
 ### Options for handlers
 [handlers]

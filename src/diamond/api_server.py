@@ -3,7 +3,6 @@
 import ast
 import configobj
 import logging
-import json
 from os import listdir, kill
 from os.path import isdir, join, abspath
 import signal
@@ -32,7 +31,6 @@ class Collector(object):
         #                        },
         #                        ...]}
         collectors = []
-        request = json.loads(request)
         if ENABLE in request:
             enable = True
             action = ENABLE
@@ -66,6 +64,8 @@ def start(config_file_path, main_process_pid):
 
     manager_pid = main_process_pid
 
+    # Figure out what collectors have been installed
+    ########################################################################
     # collector modules are organized as:
     #
     # collector_path
@@ -97,7 +97,18 @@ def start(config_file_path, main_process_pid):
                 except AttributeError as e:
                     log.debug('In file %s: %s' % (file, e))
 
-    app.run(debug=True)
+    # Start the API server flask app
+    ########################################################################
+    bind_address = '0.0.0.0'
+    bind_port = 5000
+    debug = False
+    try:
+        bind_address = config['server']['api_server_address']
+        bind_port = int(config['server']['api_server_port'])
+        debug = config['server']['api_server_debug']
+    except Exception as e:
+        log.warning('api_server_* might not be configured properly: %s' % e)
+    app.run(host=bind_address, port=bind_port, debug=debug)
 
 @app.route('/', methods=['GET'])
 def hello():
@@ -128,7 +139,7 @@ def config_collectors():
     try:
         collectors = Collector.from_request_json(request.get_json())
     except Exception as e:
-        log.warning('Bad request: ', e)
+        log.warning('Bad request: %s' % e)
         abort(400)
 
     collectors_config_path = config['server']['collectors_config_path']
