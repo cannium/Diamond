@@ -62,14 +62,11 @@ class Server(object):
             setproctitle(oldproctitle)
         self.metric_queue = self.manager.Queue()
 
-        self.collector_enable_queue = self.manager.Queue()
-        self.collector_disable_queue = self.manager.Queue()
         api_process = multiprocessing.Process(
             name = 'Diamond API Server',
             target = start_api_server,
             args = (self.configfile,
-                    self.collector_enable_queue,
-                    self.collector_disable_queue),
+                    os.getpid())
         )
         api_process.daemon = True
         api_process.start()
