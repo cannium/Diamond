@@ -105,10 +105,12 @@ def start(config_file_path, main_process_pid):
     try:
         bind_address = config['server']['api_server_address']
         bind_port = int(config['server']['api_server_port'])
-        debug = config['server']['api_server_debug']
+        debug = True \
+                if (config['server']['api_server_debug']).lower() == 'true' \
+                else False
     except Exception as e:
         log.warning('api_server_* might not be configured properly: %s' % e)
-    app.run(host=bind_address, port=bind_port, debug=debug)
+    app.run(host=bind_address, port=bind_port, debug=debug, use_reloader=False)
 
 @app.route('/', methods=['GET'])
 def hello():
