@@ -57,7 +57,7 @@ class CPUCollector(diamond.collector.Collector):
             'percore':  'True',
             'xenfix':   None,
             'simple':   'False',
-            'normalize': 'False',
+            'normalize': 'True',
         })
         return config
 

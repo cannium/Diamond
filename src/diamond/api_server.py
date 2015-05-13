@@ -7,7 +7,7 @@ from os import listdir, kill
 from os.path import isdir, join, abspath
 import signal
 
-from diamond.utils.config import load_config
+from diamond.utils.config import load_config, str_to_bool
 from flask import Flask, jsonify, request, abort
 
 log = logging.getLogger('diamond')
@@ -105,9 +105,7 @@ def start(config_file_path, main_process_pid):
     try:
         bind_address = config['server']['api_server_address']
         bind_port = int(config['server']['api_server_port'])
-        debug = True \
-                if (config['server']['api_server_debug']).lower() == 'true' \
-                else False
+        debug = str_to_bool(config['server']['api_server_debug'])
     except Exception as e:
         log.warning('api_server_* might not be configured properly: %s' % e)
     app.run(host=bind_address, port=bind_port, debug=debug, use_reloader=False)
